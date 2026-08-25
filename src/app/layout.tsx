@@ -7,7 +7,7 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ||
   (process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
-    : 'http://localhost:3000');
+    : 'https://portfolio-six-blond-11.vercel.app');
 
 const SITE_NAME = "Sureshkumar R";
 const SITE_TITLE = "Sureshkumar R | Full Stack Engineer";
