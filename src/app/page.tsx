@@ -5,11 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 import AnimatedBackground from '@/components/AnimatedBackground'
 import Navbar from '@/components/ui/Navbar'
+import Footer from '@/components/ui/Footer'
 import Hero from '@/components/sections/Hero'
 import About from '@/components/sections/About'
+import Experience from '@/components/sections/Experience'
 import PortfolioShowcase from '@/components/sections/PortfolioShowcase'
 import ContactSection from '@/components/sections/contact/ContactSection'
 import WelcomeScreen from '@/components/WelcomeScreen'
+import BackToTop from '@/components/ui/BackToTop'
 
 import { hasPlayedIntro, setIntroPlayed } from '@/lib/introState'
 
@@ -76,8 +79,11 @@ useEffect(() => {
         <Navbar />
         <Hero showApp={showApp} />
         <About />
+        <Experience />
         <PortfolioShowcase />
         <ContactSection />
+        <Footer />
+        <BackToTop />
       </div>
 
       <AnimatePresence>

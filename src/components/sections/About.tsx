@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { motion, Variants } from "framer-motion";
-import { Code, Award, Globe, FileText, ArrowUpRight } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { Code, Award, FileText, ArrowUpRight, GraduationCap } from "lucide-react";
+import { projects, certificates } from "@/data/portfolioData";
+import Image from "next/image";
 
 /* ================== ANIMATION ================== */
 
@@ -60,62 +61,51 @@ const pop: Variants = {
 export default function About() {
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
-  const [projectCount, setProjectCount] = useState(0);
-  const [certificateCount, setCertificateCount] = useState(0);
-
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
-
     check();
     window.addEventListener("resize", check);
-
-    fetchStats();
-
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const fetchStats = async () => {
-    try {
-      const { count: projects } = await supabase
-        .from("projects")
-        .select("*", { count: "exact", head: true });
-
-      const { count: certificates } = await supabase
-        .from("certificates")
-        .select("*", { count: "exact", head: true });
-
-      setProjectCount(projects || 0);
-      setCertificateCount(certificates || 0);
-    } catch {
-      setProjectCount(0);
-      setCertificateCount(0);
-    }
-  };
-
-  const scrollToPortfolio = () => {
+  const scrollToPortfolio = (tab?: string) => {
     const el = document.getElementById("portfolio");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+    if (!el) return;
+    if (tab) {
+      window.dispatchEvent(
+        new CustomEvent("portfolio:setTab", { detail: tab })
+      );
     }
+    el.scrollIntoView({ behavior: "smooth" });
   };
 
   if (isMobile === null) return null;
 
-  const stats = [
+  const stats: {
+    icon: React.ReactNode;
+    value: string;
+    title: string;
+    subtitle?: string;
+    tab: string | null;
+  }[] = [
     {
       icon: <Code size={16} />,
-      value: String(projectCount),
+      value: String(projects.length),
       title: "PROJECTS",
+      tab: "projects",
     },
     {
       icon: <Award size={16} />,
-      value: String(certificateCount),
+      value: String(certificates.length),
       title: "CERTIFICATES",
+      tab: "certificates",
     },
     {
-      icon: <Globe size={16} />,
-      value: String(projectCount + certificateCount),
-      title: "COMPLETED WORKS",
+      icon: <GraduationCap size={16} />,
+      value: "8.2",
+      title: "B.E. CSE · 2023",
+      subtitle: "Govt. College of Engineering, Erode",
+      tab: null,
     },
   ];
 
@@ -172,9 +162,7 @@ export default function About() {
                   color: "var(--text-primary)",
                 }}
               >
-                <div>Rifqi</div>
-                <div>Muhammad</div>
-                <div>Aliya</div>
+                <div>Sureshkumar R</div>
               </div>
             </motion.div>
 
@@ -198,10 +186,11 @@ export default function About() {
                 maxWidth: isMobile ? "100%" : "490px",
               }}
             >
-              Fresh Graduate SMK Rekayasa Perangkat Lunak lulusan 2026 dengan
-              passion di bidang frontend development dan UI modern. Berfokus
-              pada pembuatan website clean, responsif, dan visual yang kuat
-              untuk menghadirkan pengalaman digital yang optimal.
+              Full Stack Engineer with 3+ years of experience building multi-tenant
+              SaaS, Multi-LLM AI Agent workflows, and high-scale web platforms
+              using React, Node.js, LangGraph, and PostgreSQL. Proven track
+              record of architecting scalable systems, reducing latency, and
+              delivering production applications serving 10,000+ users.
             </motion.p>
 
             {/* QUOTE */}
@@ -229,8 +218,8 @@ export default function About() {
                 width: "fit-content",
               }}
             >
-              “Turning ideas into clean, modern, and meaningful digital
-              experiences.”
+              “Building fast, accessible, production-grade React applications
+              that serve real users at scale.”
             </motion.div>
 
             {/* BUTTONS */}
@@ -243,11 +232,9 @@ export default function About() {
                 flexWrap: "wrap",
               }}
             >
-              {/* DOWNLOAD CV */}
+              {/* VIEW RESUME */}
               <a
-                href="https://drive.google.com/file/d/1cFqZ0TY0U0I51K0Tchv8E4sbOv5yAZ9x/view?usp=drive_link"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/resume"
                 style={{ textDecoration: "none" }}
               >
                 <button
@@ -257,9 +244,9 @@ export default function About() {
                     gap: 6,
                     padding: "10px 18px",
                     borderRadius: 8,
-                    border: "1px solid white",
-                    background: "white",
-                    color: "black",
+                    border: "1px solid var(--text-primary)",
+                    background: "var(--text-primary)",
+                    color: "var(--bg-primary)",
                     fontSize: 13,
                     fontWeight: 600,
                     cursor: "pointer",
@@ -276,22 +263,22 @@ export default function About() {
                   }}
                 >
                   <FileText size={14} />
-                  Download CV
+                  View Resume
                 </button>
               </a>
 
               {/* VIEW PROJECTS */}
               <button
-                onClick={scrollToPortfolio}
+                onClick={() => scrollToPortfolio("projects")}
                 style={{
                   display: "flex",
                   alignItems: "center",
                   gap: 6,
                   padding: "10px 18px",
                   borderRadius: 8,
-                  border: "1px solid white",
+                  border: "1px solid var(--border-hover)",
                   background: "transparent",
-                  color: "white",
+                  color: "var(--text-primary)",
                   fontSize: 13,
                   fontWeight: 600,
                   cursor: "pointer",
@@ -334,12 +321,12 @@ export default function About() {
                   transform: "translateX(-80px)",
                 }}
               >
-                <img
+                <Image
                   src="/assets/PP.png"
                   alt="Profile"
+                  width={240}
+                  height={240}
                   style={{
-                    width: 240,
-                    height: 240,
                     borderRadius: "50%",
                     objectFit: "cover",
                     display: "block",
@@ -360,72 +347,92 @@ export default function About() {
             display: "grid",
             gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
             gap: 18,
-            marginTop: 36,
+            marginTop: 36,  
           }}
         >
-          {stats.map((item, i) => (
-            <motion.div
-              key={i}
-              variants={pop}
-              whileHover={{ scale: 1.03 }}
-              style={{
-                position: "relative",
-                padding: 18,
-                borderRadius: 16,
-                border: "1px solid var(--border)",
-                background: "var(--bg-card)",
-                cursor: "pointer",
-              }}
-            >
-              <div
+          {stats.map((item, i) => {
+            const clickable = item.tab !== null;
+            return (
+              <motion.div
+                key={i}
+                variants={pop}
+                whileHover={clickable ? { scale: 1.03 } : undefined}
+                onClick={
+                  clickable ? () => scrollToPortfolio(item.tab!) : undefined
+                }
                 style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: "50%",
+                  position: "relative",
+                  padding: 18,
+                  borderRadius: 16,
                   border: "1px solid var(--border)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginBottom: 10,
+                  background: "var(--bg-card)",
+                  cursor: clickable ? "pointer" : "default",
                 }}
               >
-                {item.icon}
-              </div>
+                <div
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: "50%",
+                    border: "1px solid var(--border)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: 10,
+                  }}
+                >
+                  {item.icon}
+                </div>
 
-              <div
-                style={{
-                  position: "absolute",
-                  top: 16,
-                  right: 16,
-                  fontSize: 18,
-                  fontWeight: 700,
-                }}
-              >
-                {item.value}
-              </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 16,
+                    right: 16,
+                    fontSize: 18,
+                    fontWeight: 700,
+                  }}
+                >
+                  {item.value}
+                </div>
 
-              <div
-                style={{
-                  fontSize: 11,
-                  letterSpacing: "0.08em",
-                }}
-              >
-                {item.title}
-              </div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  {item.title}
+                </div>
 
-              <div
-                onClick={scrollToPortfolio}
-                style={{
-                  position: "absolute",
-                  bottom: 14,
-                  right: 14,
-                  cursor: "pointer",
-                }}
-              >
-                <ArrowUpRight size={15} />
-              </div>
-            </motion.div>
-          ))}
+                {item.subtitle && (
+                  <div
+                    style={{
+                      fontSize: 10,
+                      color: "var(--text-secondary)",
+                      marginTop: 4,
+                      lineHeight: 1.4,
+                      letterSpacing: "0.02em",
+                    }}
+                  >
+                    {item.subtitle}
+                  </div>
+                )}
+
+                {clickable && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: 14,
+                      right: 14,
+                    }}
+                  >
+                    <ArrowUpRight size={15} />
+                  </div>
+                )}
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
     </section>

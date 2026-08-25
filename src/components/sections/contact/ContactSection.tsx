@@ -61,7 +61,7 @@ export default function ContactSection() {
       ease: 'easeInOut',
     }}
     viewport={{ once: false }}
-    className="text-white/60 text-sm sm:text-base max-w-xl sm:max-w-2xl mx-auto leading-relaxed"
+    className="text-white/75 text-sm sm:text-base max-w-xl sm:max-w-2xl mx-auto leading-relaxed"
   >
     Have something in mind? Send a message and let's connect.
   </motion.p>
@@ -87,10 +87,6 @@ export default function ContactSection() {
           <CommentsSection />
         </div>
       </div>
- {/* COPYRIGHT */}
-<div className="mt-20 text-center text-xs text-white/35">
-  © 2026 Rifqi Muhammad Aliya — All rights reserved.
-</div>
     </section>
   )
 }

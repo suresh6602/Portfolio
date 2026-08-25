@@ -2,16 +2,20 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { Sun, Moon, Palette, Sliders } from 'lucide-react'
+import { useTheme } from '@/context/ThemeContext'
+import SettingsModal from '@/components/ui/SettingsModal'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [open, setOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
   const [mounted, setMounted] = useState(false)
-
-  // 🔥 navbar muncul sekali aja
   const [showNavbar, setShowNavbar] = useState(false)
+
+  const { resolvedMode, playSound } = useTheme()
 
   useEffect(() => {
     setMounted(true)
@@ -23,7 +27,7 @@ export default function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20)
 
-      const sections = ['home', 'about', 'portfolio', 'contact']
+      const sections = ['home', 'about', 'experience', 'portfolio', 'contact']
 
       for (const sectionId of sections) {
         const section = document.getElementById(sectionId)
@@ -50,7 +54,6 @@ export default function Navbar() {
     }
   }, [])
 
-  // 🔥 navbar animasi cuma pas refresh
   useEffect(() => {
     const navbarPlayed = sessionStorage.getItem('navbarPlayed')
 
@@ -89,9 +92,7 @@ export default function Navbar() {
     let startTime: number | null = null
 
     const easeInOutCubic = (t: number) => {
-      return t < 0.5
-        ? 4 * t * t * t
-        : 1 - Math.pow(-2 * t + 2, 3) / 2
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
     }
 
     const animation = (currentTime: number) => {
@@ -118,57 +119,236 @@ export default function Navbar() {
   const navItems = [
     { label: 'Home', id: 'home' },
     { label: 'About', id: 'about' },
+    { label: 'Experience', id: 'experience' },
     { label: 'Portfolio', id: 'portfolio' },
     { label: 'Contact', id: 'contact' },
   ]
 
+  const handleOpenSettings = () => {
+    setSettingsOpen(true)
+    playSound('modal')
+  }
+
   return (
-    <motion.nav
-      initial={{ opacity: 0, y: -40 }}
-      animate={{
-        opacity: showNavbar ? 1 : 0,
-        y: showNavbar ? 0 : -40,
-      }}
-      transition={{
-        duration: 0.8,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      style={{
-        position: 'fixed',
-        top: 20,
-        left: isMobile ? 20 : 60,
-        right: isMobile ? 20 : 60,
-        zIndex: 50,
-      }}
-    >
-      <div
+    <>
+      <motion.nav
+        initial={{ opacity: 0, y: -40 }}
+        animate={{
+          opacity: showNavbar ? 1 : 0,
+          y: showNavbar ? 0 : -40,
+        }}
+        transition={{
+          duration: 0.8,
+          ease: [0.22, 1, 0.36, 1],
+        }}
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '10px 30px',
-          width: '100%',
-          borderRadius: 999,
-          backgroundColor: scrolled
-            ? 'rgba(13,13,13,0.85)'
-            : 'rgba(13,13,13,0.5)',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid var(--border)',
+          position: 'fixed',
+          top: 20,
+          left: isMobile ? 16 : 60,
+          right: isMobile ? 16 : 60,
+          zIndex: 50,
         }}
       >
-        <span
+        <div
           style={{
-            fontFamily: "'DM Mono', monospace",
-            fontSize: 13,
-            color: 'var(--text-secondary)',
-            letterSpacing: '0.1em',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: isMobile ? '8px 16px' : '10px 24px 10px 30px',
+            width: '100%',
+            borderRadius: 999,
+            backgroundColor: scrolled
+              ? 'var(--bg-nav)'
+              : 'var(--bg-nav)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--card-shadow)',
+            transition: 'background-color 0.3s ease, border-color 0.3s ease',
           }}
         >
-          rifqi.dev
-        </span>
+          {/* LOGO */}
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              fontFamily: "'DM Mono', monospace",
+              fontSize: 13,
+              color: 'var(--text-primary)',
+              letterSpacing: '0.1em',
+            }}
+          >
+            <span
+              className="animate-pulse"
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: '50%',
+                background: 'var(--accent)',
+                boxShadow: '0 0 10px var(--accent-glow)',
+              }}
+            />
+            suresh.dev
+          </span>
 
-        {!isMobile && (
-          <div style={{ display: 'flex', gap: 40 }}>
+          {/* DESKTOP NAV ITEMS */}
+          {!isMobile && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+              <div style={{ display: 'flex', gap: 36 }}>
+                {navItems.map((item) => {
+                  const isActive = activeSection === item.id
+
+                  return (
+                    <a
+                      key={item.id}
+                      href={`#${item.id}`}
+                      onClick={(e) => smoothScrollTo(e, `#${item.id}`)}
+                      style={{
+                        position: 'relative',
+                        fontFamily: "'DM Mono', monospace",
+                        fontSize: 13,
+                        color: isActive
+                          ? 'var(--text-primary)'
+                          : 'var(--text-secondary)',
+                        textDecoration: 'none',
+                        letterSpacing: '0.08em',
+                        cursor: 'pointer',
+                        paddingBottom: 4,
+                        transition: '0.25s ease',
+                      }}
+                    >
+                      {item.label}
+
+                      <span
+                        style={{
+                          position: 'absolute',
+                          bottom: 0,
+                          left: 0,
+                          width: '100%',
+                          height: 1.5,
+                          background: 'var(--accent)',
+                          transform: isActive ? 'scaleX(1)' : 'scaleX(0)',
+                          transformOrigin: 'left',
+                          transition: 'transform 0.25s ease',
+                        }}
+                      />
+                    </a>
+                  )
+                })}
+              </div>
+
+              {/* SETTINGS / THEME TRIGGER BUTTON */}
+              <button
+                onClick={handleOpenSettings}
+                className="group relative flex items-center gap-2 px-3.5 py-1.5 rounded-full border transition-all duration-300 hover:scale-105 active:scale-95"
+                style={{
+                  borderColor: 'var(--border)',
+                  backgroundColor: 'var(--badge-bg)',
+                  color: 'var(--text-primary)',
+                }}
+                aria-label="Open Theme and Visual Settings"
+              >
+                <div
+                  className="w-2 h-2 rounded-full transition-transform group-hover:scale-125"
+                  style={{
+                    backgroundColor: 'var(--accent)',
+                    boxShadow: '0 0 8px var(--accent-glow)',
+                  }}
+                />
+                {resolvedMode === 'dark' ? (
+                  <Moon size={13} className="text-white/80" />
+                ) : (
+                  <Sun size={13} className="text-amber-500" />
+                )}
+                <span
+                  style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: 11,
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  Theme
+                </span>
+              </button>
+            </div>
+          )}
+
+          {/* MOBILE RIGHT BUTTONS */}
+          {isMobile && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              {/* Settings button on mobile */}
+              <button
+                onClick={handleOpenSettings}
+                className="w-8 h-8 rounded-full border flex items-center justify-center transition-transform active:scale-90"
+                style={{
+                  borderColor: 'var(--border)',
+                  backgroundColor: 'var(--badge-bg)',
+                  color: 'var(--text-primary)',
+                }}
+                aria-label="Open Theme Settings"
+              >
+                {resolvedMode === 'dark' ? <Moon size={13} /> : <Sun size={13} />}
+              </button>
+
+              {/* Hamburger Icon */}
+              <div
+                onClick={() => setOpen(!open)}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4,
+                  cursor: 'pointer',
+                  padding: 4,
+                }}
+              >
+                <span
+                  style={{
+                    width: 18,
+                    height: 2,
+                    background: 'var(--text-primary)',
+                    borderRadius: 1,
+                  }}
+                />
+                <span
+                  style={{
+                    width: 18,
+                    height: 2,
+                    background: 'var(--text-primary)',
+                    borderRadius: 1,
+                  }}
+                />
+                <span
+                  style={{
+                    width: 18,
+                    height: 2,
+                    background: 'var(--text-primary)',
+                    borderRadius: 1,
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* MOBILE MENU DROPDOWN */}
+        {isMobile && open && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              marginTop: 10,
+              borderRadius: 20,
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              backdropFilter: 'blur(16px)',
+              padding: '18px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 14,
+              boxShadow: 'var(--card-shadow)',
+            }}
+          >
             {navItems.map((item) => {
               const isActive = activeSection === item.id
 
@@ -178,98 +358,55 @@ export default function Navbar() {
                   href={`#${item.id}`}
                   onClick={(e) => smoothScrollTo(e, `#${item.id}`)}
                   style={{
-                    position: 'relative',
                     fontFamily: "'DM Mono', monospace",
                     fontSize: 13,
                     color: isActive
-                      ? 'var(--text-primary)'
+                      ? 'var(--accent)'
                       : 'var(--text-secondary)',
                     textDecoration: 'none',
-                    letterSpacing: '0.08em',
-                    cursor: 'pointer',
-                    paddingBottom: 4,
-                    transition: '0.25s ease',
+                    padding: '4px 0',
                   }}
                 >
                   {item.label}
-
-                  <span
-                    style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      width: '100%',
-                      height: 1,
-                      background: 'white',
-                      transform: isActive
-                        ? 'scaleX(1)'
-                        : 'scaleX(0)',
-                      transformOrigin: 'left',
-                      transition: 'transform 0.25s ease',
-                    }}
-                  />
                 </a>
               )
             })}
-          </div>
-        )}
 
-        {isMobile && (
-          <div
-            onClick={() => setOpen(!open)}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 4,
-              cursor: 'pointer',
-            }}
-          >
-            <span style={{ width: 20, height: 2, background: 'white' }} />
-            <span style={{ width: 20, height: 2, background: 'white' }} />
-            <span style={{ width: 20, height: 2, background: 'white' }} />
-          </div>
-        )}
-      </div>
-
-      {isMobile && open && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          style={{
-            marginTop: 10,
-            borderRadius: 16,
-            background: 'rgba(13,13,13,0.9)',
-            border: '1px solid var(--border)',
-            backdropFilter: 'blur(12px)',
-            padding: 20,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 18,
-          }}
-        >
-          {navItems.map((item) => {
-            const isActive = activeSection === item.id
-
-            return (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                onClick={(e) => smoothScrollTo(e, `#${item.id}`)}
+            <div
+              style={{
+                borderTop: '1px solid var(--border)',
+                paddingTop: 12,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <button
+                onClick={() => {
+                  setOpen(false)
+                  handleOpenSettings()
+                }}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border text-[12px] font-medium"
                 style={{
+                  borderColor: 'var(--border)',
+                  backgroundColor: 'var(--badge-bg)',
+                  color: 'var(--text-primary)',
                   fontFamily: "'DM Mono', monospace",
-                  fontSize: 13,
-                  color: isActive
-                    ? 'var(--text-primary)'
-                    : 'var(--text-secondary)',
                 }}
               >
-                {item.label}
-              </a>
-            )
-          })}
-        </motion.div>
-      )}
-    </motion.nav>
+                <Sliders size={13} />
+                Preferences &amp; Theme
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </motion.nav>
+
+      {/* SETTINGS MODAL / FLYOUT */}
+      <SettingsModal
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+      />
+    </>
   )
 }

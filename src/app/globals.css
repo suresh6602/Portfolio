@@ -4,16 +4,154 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* ==========================================================================
+   THEME DESIGN SYSTEM TOKENS (DARK & LIGHT + AMBIENT PALETTES)
+   ========================================================================== */
+
+:root,
+[data-mode="dark"] {
   --bg-primary: #0d0d0d;
   --bg-secondary: #141414;
-  --bg-card: #1a1a1a;
-  --border: #2a2a2a;
-  --text-primary: #f0f0f0;
-  --text-secondary: #888888;
-  --text-muted: #555555;
-  --accent: #d4d4d4;
+  --bg-card: #161616;
+  --bg-card-hover: #1f1f1f;
+  --bg-nav: rgba(13, 13, 13, 0.75);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.22);
+  --text-primary: #f5f5f5;
+  --text-secondary: #c8c8c8;
+  --text-muted: #8e8e8e;
+  --grid-color: rgba(255, 255, 255, 0.05);
+  --card-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+  --card-glow: rgba(255, 255, 255, 0.03);
 }
+
+[data-mode="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --bg-nav: rgba(255, 255, 255, 0.85);
+  --border: rgba(15, 23, 42, 0.12);
+  --border-hover: rgba(15, 23, 42, 0.25);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --grid-color: rgba(15, 23, 42, 0.06);
+  --card-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
+  --card-glow: rgba(0, 0, 0, 0.02);
+}
+
+/* ----------------- PALETTE ACCENTS ----------------- */
+
+/* 1. Obsidian Silver */
+:root,
+[data-palette="obsidian"] {
+  --accent: #ffffff;
+  --accent-secondary: #a1a1aa;
+  --accent-glow: rgba(255, 255, 255, 0.2);
+  --blob-1: rgba(255, 255, 255, 0.15);
+  --blob-2: rgba(200, 200, 200, 0.12);
+  --badge-bg: rgba(255, 255, 255, 0.08);
+  --badge-text: #ffffff;
+}
+
+[data-mode="light"][data-palette="obsidian"] {
+  --accent: #0f172a;
+  --accent-secondary: #475569;
+  --accent-glow: rgba(15, 23, 42, 0.15);
+  --blob-1: rgba(15, 23, 42, 0.08);
+  --blob-2: rgba(100, 116, 139, 0.06);
+  --badge-bg: rgba(15, 23, 42, 0.06);
+  --badge-text: #0f172a;
+}
+
+/* 2. Cyberpunk Neon */
+[data-palette="cyberpunk"] {
+  --accent: #c084fc;
+  --accent-secondary: #38bdf8;
+  --accent-glow: rgba(192, 132, 252, 0.28);
+  --blob-1: rgba(192, 132, 252, 0.22);
+  --blob-2: rgba(56, 189, 248, 0.18);
+  --badge-bg: rgba(192, 132, 252, 0.12);
+  --badge-text: #e9d5ff;
+}
+
+[data-mode="light"][data-palette="cyberpunk"] {
+  --accent: #9333ea;
+  --accent-secondary: #0284c7;
+  --accent-glow: rgba(147, 51, 234, 0.15);
+  --blob-1: rgba(192, 132, 252, 0.12);
+  --blob-2: rgba(56, 189, 248, 0.1);
+  --badge-bg: rgba(147, 51, 234, 0.08);
+  --badge-text: #6b21a8;
+}
+
+/* 3. Emerald Matrix */
+[data-palette="emerald"] {
+  --accent: #34d399;
+  --accent-secondary: #10b981;
+  --accent-glow: rgba(52, 211, 153, 0.28);
+  --blob-1: rgba(52, 211, 153, 0.2);
+  --blob-2: rgba(16, 185, 129, 0.16);
+  --badge-bg: rgba(52, 211, 153, 0.12);
+  --badge-text: #a7f3d0;
+}
+
+[data-mode="light"][data-palette="emerald"] {
+  --accent: #059669;
+  --accent-secondary: #0d9488;
+  --accent-glow: rgba(5, 150, 105, 0.15);
+  --blob-1: rgba(52, 211, 153, 0.12);
+  --blob-2: rgba(13, 148, 136, 0.1);
+  --badge-bg: rgba(5, 150, 105, 0.08);
+  --badge-text: #065f46;
+}
+
+/* 4. Sunset Amber */
+[data-palette="amber"] {
+  --accent: #fbbf24;
+  --accent-secondary: #f97316;
+  --accent-glow: rgba(251, 191, 36, 0.28);
+  --blob-1: rgba(251, 191, 36, 0.2);
+  --blob-2: rgba(249, 115, 22, 0.16);
+  --badge-bg: rgba(251, 191, 36, 0.12);
+  --badge-text: #fde68a;
+}
+
+[data-mode="light"][data-palette="amber"] {
+  --accent: #d97706;
+  --accent-secondary: #ea580c;
+  --accent-glow: rgba(217, 119, 6, 0.15);
+  --blob-1: rgba(251, 191, 36, 0.12);
+  --blob-2: rgba(234, 88, 12, 0.1);
+  --badge-bg: rgba(217, 119, 6, 0.08);
+  --badge-text: #92400e;
+}
+
+/* 5. Cobalt Azure */
+[data-palette="cobalt"] {
+  --accent: #38bdf8;
+  --accent-secondary: #2563eb;
+  --accent-glow: rgba(56, 189, 248, 0.28);
+  --blob-1: rgba(56, 189, 248, 0.2);
+  --blob-2: rgba(37, 99, 235, 0.18);
+  --badge-bg: rgba(56, 189, 248, 0.12);
+  --badge-text: #bae6fd;
+}
+
+[data-mode="light"][data-palette="cobalt"] {
+  --accent: #0284c7;
+  --accent-secondary: #1d4ed8;
+  --accent-glow: rgba(2, 132, 199, 0.15);
+  --blob-1: rgba(56, 189, 248, 0.12);
+  --blob-2: rgba(29, 78, 216, 0.1);
+  --badge-bg: rgba(2, 132, 199, 0.08);
+  --badge-text: #075985;
+}
+
+/* ==========================================================================
+   BASE & RESET STYLES
+   ========================================================================== */
 
 * {
   margin: 0;
@@ -30,18 +168,22 @@ body {
   color: var(--text-primary);
   font-family: 'Syne', sans-serif;
   -webkit-font-smoothing: antialiased;
-}
-
-body {
   overflow-x: hidden;
-}
-html {
-  scroll-behavior: smooth;
+  transition: background-color 0.4s ease, color 0.3s ease;
 }
 
 * {
   caret-color: transparent;
-  user-select: none;
+}
+
+/* Reduced Motion Mode */
+[data-reduced-motion="on"] *,
+[data-reduced-motion="on"] *::before,
+[data-reduced-motion="on"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }
 
 /* Hide scrollbar global */
@@ -58,19 +200,17 @@ html {
   background: transparent;
 }
 
-/* Firefox */
 html {
   scrollbar-width: none;
 }
 
-/* IE + Edge lama */
 body {
   -ms-overflow-style: none;
 }
 
 input,
 textarea {
-  caret-color: white;
+  caret-color: var(--accent);
 }
 
 .custom-scroll::-webkit-scrollbar {
@@ -82,10 +222,154 @@ textarea {
 }
 
 .custom-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 999px;
 }
 
+[data-mode="light"] .custom-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+
 .custom-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.2);
+  background: var(--accent);
+}
+
+/* ==========================================================================
+   LIGHT MODE CONTRAST & VISIBILITY ADAPTATION RULES
+   ========================================================================== */
+
+[data-mode="light"] {
+  color-scheme: light;
+}
+
+/* 1. Global Text Color Overrides for Light Mode */
+[data-mode="light"] .text-white {
+  color: #0f172a !important;
+}
+
+[data-mode="light"] .text-white\/90,
+[data-mode="light"] .text-white\/85,
+[data-mode="light"] .text-white\/80 {
+  color: #1e293b !important;
+}
+
+[data-mode="light"] .text-white\/75,
+[data-mode="light"] .text-white\/70,
+[data-mode="light"] .text-white\/65,
+[data-mode="light"] .text-white\/60 {
+  color: #475569 !important;
+}
+
+[data-mode="light"] .text-white\/55,
+[data-mode="light"] .text-white\/50,
+[data-mode="light"] .text-white\/45,
+[data-mode="light"] .text-white\/40 {
+  color: #64748b !important;
+}
+
+[data-mode="light"] .text-white\/30,
+[data-mode="light"] .text-white\/25,
+[data-mode="light"] .text-white\/20,
+[data-mode="light"] .text-white\/10 {
+  color: #94a3b8 !important;
+}
+
+/* 2. Gradient Headings Contrast in Light Mode */
+[data-mode="light"] .from-white.to-white\/60,
+[data-mode="light"] .from-white.to-white\/70,
+[data-mode="light"] .from-white.to-white\/80 {
+  --tw-gradient-from: #0f172a !important;
+  --tw-gradient-to: #475569 !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+/* 3. Cards & Glassmorphism Surfaces in Light Mode */
+[data-mode="light"] .bg-white\/\[0\.02\],
+[data-mode="light"] .bg-white\/\[0\.03\],
+[data-mode="light"] .bg-white\/\[0\.04\],
+[data-mode="light"] .bg-white\/\[0\.05\],
+[data-mode="light"] .bg-white\/\[0\.06\],
+[data-mode="light"] .bg-white\/\[0\.07\],
+[data-mode="light"] .bg-white\/\[0\.08\],
+[data-mode="light"] .bg-white\/5,
+[data-mode="light"] .bg-white\/10 {
+  background-color: #ffffff !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03) !important;
+}
+
+[data-mode="light"] .hover\:bg-white\/\[0\.06\]:hover,
+[data-mode="light"] .hover\:bg-white\/\[0\.07\]:hover,
+[data-mode="light"] .hover\:bg-white\/\[0\.08\]:hover,
+[data-mode="light"] .hover\:bg-white\/10:hover,
+[data-mode="light"] .hover\:bg-white\/20:hover {
+  background-color: #f8fafc !important;
+}
+
+/* 4. Borders Contrast in Light Mode */
+[data-mode="light"] .border-white\/5,
+[data-mode="light"] .border-white\/10,
+[data-mode="light"] .border-white\/15,
+[data-mode="light"] .border-white\/20,
+[data-mode="light"] .border-white\/25,
+[data-mode="light"] .border-white\/30 {
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+[data-mode="light"] .hover\:border-white\/20:hover,
+[data-mode="light"] .hover\:border-white\/25:hover,
+[data-mode="light"] .hover\:border-white\/30:hover {
+  border-color: rgba(15, 23, 42, 0.28) !important;
+}
+
+/* 5. Active Tab Indicator in Showcase */
+[data-mode="light"] .bg-white\/10.text-white {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+/* 6. Form Inputs & Textareas in Light Mode */
+[data-mode="light"] input,
+[data-mode="light"] textarea {
+  background-color: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+  color: #0f172a !important;
+  caret-color: #0f172a !important;
+}
+
+[data-mode="light"] input::placeholder,
+[data-mode="light"] textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+[data-mode="light"] input:focus,
+[data-mode="light"] textarea:focus {
+  background-color: #ffffff !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* 7. Action Button Overrides in Light Mode */
+[data-mode="light"] .bg-white.text-black {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+[data-mode="light"] .bg-white.text-black:hover {
+  background-color: #1e293b !important;
+}
+
+/* 8. Hardcoded Radial Gradient Backdrops in Detail/Resume Pages */
+[data-mode="light"] .bg-\[radial-gradient\(circle_at_top_left\,\#1a1a1a_0\%\,\#0a0a0a_35\%\,\#050505_100\%\)\] {
+  background: radial-gradient(circle at top left, #ffffff 0%, #f1f5f9 45%, #e2e8f0 100%) !important;
+}
+
+[data-mode="light"] .bg-\[radial-gradient\(circle_at_top_left\,\#151515_0\%\,\#0a0a0a_40\%\,\#050505_100\%\)\] {
+  background: radial-gradient(circle at top left, #ffffff 0%, #f1f5f9 45%, #e2e8f0 100%) !important;
+}
+
+/* 9. Tech Badge Chips in Light Mode */
+[data-mode="light"] .rounded-full.border.border-white\/10 {
+  background-color: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+  color: #334155 !important;
 }

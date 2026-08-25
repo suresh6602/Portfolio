@@ -4,8 +4,20 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import App from "@/components/band/App";
 import TextType from "@/components/band/TextType";
+import CopyEmailButton from "@/components/ui/CopyEmailButton";
 
-const skills = ["Typescript", "React.js", "Tailwind"];
+const skills = [
+  "React 18 / Next.js",
+  "LangGraph · Multi-LLM",
+  "TypeScript",
+  "Node.js · Express",
+  "PostgreSQL · Drizzle ORM",
+  "AWS (Bedrock · SES)",
+  "WebSockets · Voice AI",
+  "React Native",
+  "Python · Flask",
+  "Offline-First PWAs",
+];
 
 type HeroProps = {
   showApp: boolean;
@@ -69,7 +81,8 @@ export default function Hero({ showApp }: HeroProps) {
         style={{
           width: "100%",
           position: "relative",
-          zIndex: 5,
+          zIndex: 45,
+          pointerEvents: "auto",
         }}
       >
         {/* LABEL */}
@@ -92,7 +105,7 @@ export default function Hero({ showApp }: HeroProps) {
               textTransform: "uppercase",
             }}
           >
-            ✦ Available for work
+            ✦ Open to new opportunities
           </span>
         </motion.div>
 
@@ -118,7 +131,7 @@ export default function Hero({ showApp }: HeroProps) {
               marginBottom: 0,
             }}
           >
-            Frontend
+            Full Stack
           </motion.h1>
 
           <motion.h1
@@ -142,7 +155,7 @@ export default function Hero({ showApp }: HeroProps) {
               marginBottom: 24,
             }}
           >
-            Developer
+            Engineer
           </motion.h1>
         </div>
 
@@ -162,7 +175,7 @@ export default function Hero({ showApp }: HeroProps) {
             }}
           >
             <TextType
-              text={["Junior Programmer", "fresh Graduate", "Happy coding!"]}
+              text={["MERN Stack · TypeScript · Python · 3YOE", "Shipping production apps for 10,000+ users"]}
               typingSpeed={75}
               pauseDuration={1500}
               showCursor
@@ -197,9 +210,9 @@ export default function Hero({ showApp }: HeroProps) {
               textWrap: "pretty",
             }}
           >
-            Menciptakan website modern dengan tampilan clean, responsif, dan
-            elegan. Mengubah ide dan desain menjadi pengalaman digital yang
-            menarik dan mudah digunakan.
+            I build full-stack web applications using React, Node.js, and
+            Python — focused on performance, scalability, and clean
+            architecture.
           </p>
         </motion.div>
 
@@ -246,6 +259,16 @@ export default function Hero({ showApp }: HeroProps) {
           ))}
         </motion.div>
 
+        {/* QUICK CONTACT / EMAIL */}
+        <motion.div
+          initial={false}
+          animate={startAnim ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
+          transition={{ duration: 0.8, delay: 0.85 }}
+          style={{ marginBottom: 20 }}
+        >
+          <CopyEmailButton variant="pill" />
+        </motion.div>
+
         {/* FOOTER */}
         <motion.div
           initial={false}
@@ -274,7 +297,7 @@ export default function Hero({ showApp }: HeroProps) {
               color: "var(--text-muted)",
             }}
           >
-            ↗ open to full-time & freelance opportunities
+            ↗ open to full-time & freelance — Tamil Nadu · open to relocate
           </span>
         </motion.div>
       </div>
@@ -282,11 +305,7 @@ export default function Hero({ showApp }: HeroProps) {
       <motion.div
         initial={false}
         animate={startAnim ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-        transition={{
-          duration: 0.9,
-          delay: 1.2,
-          ease: [0.22, 1, 0.36, 1],
-        }}
+        transition={{ duration: 0.9, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
         style={{
           position: "absolute",
           bottom: 38,
@@ -296,56 +315,26 @@ export default function Hero({ showApp }: HeroProps) {
           pointerEvents: "none",
         }}
       >
-        {/* SCROLL INDICATOR */}
-<motion.div
-  initial={false}
-  animate={
-    startAnim
-      ? { opacity: 1, y: 0 }
-      : { opacity: 0, y: 40 }
-  }
-  transition={{
-    duration: 0.9,
-    delay: 1.2,
-    ease: [0.22, 1, 0.36, 1],
-  }}
-  className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none w-full flex justify-center"
->
-  <motion.div
-    animate={{
-      y: [0, 6, 0],
-      opacity: [1, 0.65, 1],
-    }}
-    transition={{
-      duration: 1.4,
-      repeat: Infinity,
-      ease: 'easeInOut',
-    }}
-    className="flex items-center justify-center gap-2"
-  >
-    <span
-      style={{
-        fontFamily: "'DM Mono', monospace",
-        fontSize: 11,
-        letterSpacing: '0.2em',
-        textTransform: 'uppercase',
-        color: 'var(--text-muted)',
-      }}
-    >
-      Scroll
-    </span>
-
-    <span
-      style={{
-        fontSize: 16,
-        color: 'var(--text-secondary)',
-        lineHeight: 1,
-      }}
-    >
-      ↓
-    </span>
-  </motion.div>
-</motion.div>
+        <motion.div
+          animate={{ y: [0, 6, 0], opacity: [1, 0.65, 1] }}
+          transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+          className="flex items-center justify-center gap-2"
+        >
+          <span
+            style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: 11,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              color: "var(--text-muted)",
+            }}
+          >
+            Scroll
+          </span>
+          <span style={{ fontSize: 16, color: "var(--text-secondary)", lineHeight: 1 }}>
+            ↓
+          </span>
+        </motion.div>
       </motion.div>
     </section>
   );

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
+  <defs>
+    <linearGradient id="appleBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18181b"/>
+      <stop offset="100%" stop-color="#09090b"/>
+    </linearGradient>
+    <linearGradient id="appleAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#a1a1aa"/>
+    </linearGradient>
+    <linearGradient id="appleGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="180" height="180" rx="42" fill="url(#appleBg)" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+  <circle cx="138" cy="42" r="10" fill="url(#appleGlow)" />
+
+  <path d="M120 62 C120 50 110 42 92 42 C72 42 60 52 60 67 C60 80 70 87 88 92 L96 94 C112 98 122 105 122 120 C122 136 106 148 88 148 C66 148 54 136 52 120" 
+        fill="none" 
+        stroke="url(#appleAccent)" 
+        stroke-width="15" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+</svg>

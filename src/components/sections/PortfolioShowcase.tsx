@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   X,
@@ -36,6 +36,24 @@ export default function PortfolioShowcase() {
 
   const [showAllProjects, setShowAllProjects] =
     useState(false)
+
+  // listen for tab-switch requests from About section cards
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const tab = (e as CustomEvent<string>).detail
+      if (
+        tab === 'projects' ||
+        tab === 'certificates' ||
+        tab === 'techstack'
+      ) {
+        setActiveTab(tab)
+        if (tab !== 'projects') setShowAllProjects(false)
+      }
+    }
+    window.addEventListener('portfolio:setTab', handler)
+    return () =>
+      window.removeEventListener('portfolio:setTab', handler)
+  }, [])
 
   const displayedProjects = showAllProjects
     ? projects
@@ -82,20 +100,36 @@ export default function PortfolioShowcase() {
 
       <section
         id="portfolio"
-        className="w-full max-w-[1450px] mx-auto px-8 md:px-12 lg:px-20 pt-24 pb-24 text-white"
+        className="w-full max-w-[1450px] mx-auto px-5 sm:px-8 md:px-12 lg:px-20 pt-24 pb-24 text-white"
       >
         {/* HEADER */}
         <motion.div
           initial={{ opacity: 0, y: 45 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9 }}
-          className="text-center mb-8"
+          className="text-center mb-12"
         >
-          <h1 className="text-3xl md:text-5xl font-bold mb-3">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-xl mb-5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span
+              className="text-[11px] text-white/70 uppercase"
+              style={{
+                fontFamily: "'DM Mono', monospace",
+                letterSpacing: '0.2em',
+              }}
+            >
+              Selected Work
+            </span>
+          </div>
+
+          <h1
+            className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60"
+            style={{ letterSpacing: '-0.03em' }}
+          >
             Portfolio Showcase
           </h1>
 
-          <p className="text-white/55 max-w-xl mx-auto text-sm md:text-base">
+          <p className="text-white/70 max-w-xl mx-auto text-[15px] leading-relaxed">
             Explore my journey through projects,
             certifications, and technical expertise.
           </p>
@@ -121,7 +155,7 @@ export default function PortfolioShowcase() {
                 className={`flex-1 rounded-full py-3 text-sm transition-all duration-300 ${
                   activeTab === tab
                     ? 'bg-white/10 text-white'
-                    : 'text-white/50 hover:text-white'
+                    : 'text-white/70 hover:text-white'
                 }`}
               >
                 {tab === 'projects'
@@ -305,6 +339,7 @@ export default function PortfolioShowcase() {
                       <div className="rounded-2xl overflow-hidden border border-white/10 h-56">
                         <img
                           src={item.image_url}
+                          alt={`${item.title} certificate`}
                           className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                         />
                       </div>
@@ -357,11 +392,20 @@ export default function PortfolioShowcase() {
                   className="relative z-10 w-[56px] h-[56px] object-contain"
                 />
               ) : (
-                <div className="relative z-10 w-[56px] h-[56px] rounded-2xl bg-white/10" />
+                <div className="relative z-10 w-[56px] h-[56px] rounded-2xl border border-white/15 bg-white/[0.06] flex items-center justify-center">
+                  <span
+                    className="text-[13px] font-bold text-white/70"
+                    style={{ fontFamily: "'DM Mono', monospace" }}
+                  >
+                    {(item.name.match(/[A-Z0-9]/g) || [item.name[0]])
+                      .join('')
+                      .slice(0, 4)}
+                  </span>
+                </div>
               )}
             </div>
 
-            <p className="text-[11px] text-white/80 text-center leading-tight px-2 line-clamp-1">
+            <p className="text-[12px] text-white/80 text-center leading-tight px-2 line-clamp-1">
               {item.name}
             </p>
           </motion.div>

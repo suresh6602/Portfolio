@@ -1,7 +1,7 @@
 'use client';
 import './index.css';
 import * as THREE from 'three';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { Canvas, extend, useThree, useFrame } from '@react-three/fiber';
 import {
   useGLTF,
@@ -23,9 +23,10 @@ extend({ MeshLineGeometry, MeshLineMaterial });
 
 const GLTF_PATH = '/assets/kartu.glb';
 const TEXTURE_PATH = '/assets/bandd.png';
-
+const FRONT_PATH = '/assets/P.png';
 useGLTF.preload(GLTF_PATH);
 useTexture.preload(TEXTURE_PATH);
+useTexture.preload(FRONT_PATH);
 
 export default function App() {
   const [isMobile, setIsMobile] = useState(false);
@@ -112,6 +113,191 @@ function Scene({ isMobile }) {
   );
 }
 
+function makeCardTexture(width, height, drawFn) {
+  if (typeof document === 'undefined') return null;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  drawFn(ctx, width, height);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.flipY = false;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 16;
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+function drawFrontCard(ctx, W, H, profileImg) {
+  // White card background
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+
+  // Top header bar
+  ctx.fillStyle = '#0f0f0f';
+  ctx.fillRect(0, 0, W, 72);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '400 16px Arial, sans-serif';
+  ctx.letterSpacing = '6px';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('EMPLOYEE ID', W / 2 + 3, 36);
+  ctx.letterSpacing = '0px';
+
+  // Photo frame (object-cover fitting)
+  const padX = 60;
+  const photoX = padX;
+  const photoY = 110;
+  const photoW = W - padX * 2;
+  const photoH = 410;
+
+  ctx.fillStyle = '#f3f3f3';
+  ctx.fillRect(photoX, photoY, photoW, photoH);
+
+  if (profileImg && profileImg.naturalWidth) {
+    const imgW = profileImg.naturalWidth;
+    const imgH = profileImg.naturalHeight;
+    const imgAspect = imgW / imgH;
+    const targetAspect = photoW / photoH;
+
+    let sx, sy, sw, sh;
+    if (imgAspect > targetAspect) {
+      // Image wider than frame — crop sides, keep full height
+      sh = imgH;
+      sw = imgH * targetAspect;
+      sx = (imgW - sw) / 2;
+      sy = 0;
+    } else {
+      // Image taller than frame — crop top/bottom, center vertically
+      sw = imgW;
+      sh = imgW / targetAspect;
+      sx = 0;
+      sy = (imgH - sh) / 2;
+    }
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(photoX, photoY, photoW, photoH);
+    ctx.clip();
+    ctx.drawImage(profileImg, sx, sy, sw, sh, photoX, photoY, photoW, photoH);
+    ctx.restore();
+  }
+
+  // Photo border
+  ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(photoX + 0.5, photoY + 0.5, photoW - 1, photoH - 1);
+
+  // Name
+  ctx.fillStyle = '#111111';
+  ctx.font = '800 42px Arial, sans-serif';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText('Sureshkumar R', W / 2, photoY + photoH + 60);
+
+  // Designation
+  ctx.fillStyle = '#1f1f1f';
+  ctx.font = '600 22px Arial, sans-serif';
+  ctx.fillText('Full Stack Engineer', W / 2, photoY + photoH + 95);
+
+  // Footer divider + id
+  ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padX, H - 50);
+  ctx.lineTo(W - padX, H - 50);
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(0,0,0,0.45)';
+  ctx.font = '400 13px Arial, sans-serif';
+  ctx.fillText('ID-2026-0001', W / 2, H - 28);
+
+  // Outer border
+  ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(0.5, 0.5, W - 1, H - 1);
+}
+
+function drawBackCard(ctx, W, H) {
+  // White background
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+
+  // Top bar
+  ctx.fillStyle = '#0f0f0f';
+  ctx.fillRect(0, 0, W, 72);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '400 16px Arial, sans-serif';
+  ctx.letterSpacing = '6px';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('CONTACT INFO', W / 2 + 3, 36);
+  ctx.letterSpacing = '0px';
+
+  const cx = W / 2;
+  let y = 200;
+
+  // NAME
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.font = '500 14px Arial, sans-serif';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText('NAME', cx, y);
+  y += 38;
+  ctx.fillStyle = '#111111';
+  ctx.font = '700 34px Arial, sans-serif';
+  ctx.fillText('Sureshkumar R', cx, y);
+  y += 65;
+
+  ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(80, y);
+  ctx.lineTo(W - 80, y);
+  ctx.stroke();
+  y += 50;
+
+  // ROLE
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.font = '500 14px Arial, sans-serif';
+  ctx.fillText('ROLE', cx, y);
+  y += 32;
+  ctx.fillStyle = '#111111';
+  ctx.font = '600 22px Arial, sans-serif';
+  ctx.fillText('Full Stack Engineer', cx, y);
+  y += 55;
+
+  ctx.beginPath();
+  ctx.moveTo(80, y);
+  ctx.lineTo(W - 80, y);
+  ctx.stroke();
+  y += 50;
+
+  // EMAIL
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.font = '500 14px Arial, sans-serif';
+  ctx.fillText('EMAIL', cx, y);
+  y += 30;
+  ctx.fillStyle = '#111111';
+  ctx.font = '500 19px Arial, sans-serif';
+  ctx.fillText('sureshkumar27082002@gmail.com', cx, y);
+
+  // Bottom bar
+  ctx.fillStyle = '#0f0f0f';
+  ctx.fillRect(0, H - 72, W, 72);
+  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  ctx.font = '400 11px Arial, sans-serif';
+  ctx.letterSpacing = '4px';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('RETURN IF FOUND', W / 2 + 2, H - 36);
+  ctx.letterSpacing = '0px';
+
+  // Outer border
+  ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(0.5, 0.5, W - 1, H - 1);
+}
+
 function Band({ isMobile, maxSpeed = 50, minSpeed = 10 }) {
   const band = useRef();
   const fixed = useRef();
@@ -135,17 +321,58 @@ function Band({ isMobile, maxSpeed = 50, minSpeed = 10 }) {
 
   const { nodes, materials } = useGLTF(GLTF_PATH);
   const texture = useTexture(TEXTURE_PATH);
+  const frontTexture = useTexture(FRONT_PATH);
+
+  const frontMaterial = useMemo(() => {
+    const tex = makeCardTexture(600, 840, (ctx, W, H) =>
+      drawFrontCard(ctx, W, H, frontTexture.image)
+    );
+    if (tex) {
+      // GLTF card UVs span 0-0.5; repeat 2 maps the full canvas onto the face
+      tex.repeat.set(2, 1);
+      tex.offset.set(0, 0);
+    }
+    const mat = materials.base.clone();
+    if (tex) mat.map = tex;
+    mat.side = THREE.FrontSide;
+    mat.needsUpdate = true;
+    return mat;
+  }, [materials.base, frontTexture]);
+
+  const backMaterial = useMemo(() => {
+    const tex = makeCardTexture(600, 840, drawBackCard);
+    if (tex) {
+      // repeat 2 to fill the half-UV face; negative U + offset 1 mirrors so
+      // text reads correctly when viewed from behind (BackSide flips it)
+      tex.repeat.set(-2, 1);
+      tex.offset.set(1, 0);
+    }
+    return new THREE.MeshBasicMaterial({
+      map: tex || null,
+      side: THREE.BackSide,
+    });
+  }, []);
+
   const { width, height } = useThree((state) => state.size);
 
-  const [curve] = useState(
-    () =>
-      new THREE.CatmullRomCurve3([
-        new THREE.Vector3(),
-        new THREE.Vector3(),
-        new THREE.Vector3(),
-        new THREE.Vector3(),
-      ])
-  );
+  const [curve] = useState(() => {
+    const c = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(),
+      new THREE.Vector3(),
+      new THREE.Vector3(),
+      new THREE.Vector3(),
+    ]);
+    c.curveType = 'chordal';
+    return c;
+  });
+
+  const bandTexture = useMemo(() => {
+    const t = texture.clone();
+    t.wrapS = THREE.RepeatWrapping;
+    t.wrapT = THREE.RepeatWrapping;
+    t.needsUpdate = true;
+    return t;
+  }, [texture]);
 
   const [dragged, drag] = useState(false);
   const [hovered, hover] = useState(false);
@@ -220,9 +447,6 @@ function Band({ isMobile, maxSpeed = 50, minSpeed = 10 }) {
     }
   });
 
-  curve.curveType = 'chordal';
-  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-
   return (
     <>
       <group position={[3, 4, 0]}>
@@ -237,11 +461,11 @@ function Band({ isMobile, maxSpeed = 50, minSpeed = 10 }) {
           {...segmentProps}
           type={dragged ? 'kinematicPosition' : 'dynamic'}
         >
-          <CuboidCollider args={[0.8, 1.125, 0.01]} />
+          <CuboidCollider args={[0.93, 1.3, 0.01]} />
 
           <group
-            scale={2.25}
-            position={[0, -1.2, -0.05]}
+            scale={2.6}
+            position={[0, -1.4, -0.05]}
             onPointerOver={() => canDrag && hover(true)}
             onPointerOut={() => canDrag && hover(false)}
             onPointerUp={(e) => {
@@ -259,9 +483,8 @@ function Band({ isMobile, maxSpeed = 50, minSpeed = 10 }) {
               );
             }}
           >
-            <mesh geometry={nodes.card.geometry}>
-              <meshPhysicalMaterial {...materials.base} />
-            </mesh>
+            <mesh geometry={nodes.card.geometry} material={frontMaterial} />
+            <mesh geometry={nodes.card.geometry} material={backMaterial} />
             <mesh geometry={nodes.clip.geometry} material={materials.metal} />
             <mesh geometry={nodes.clamp.geometry} material={materials.metal} />
           </group>
@@ -277,7 +500,7 @@ function Band({ isMobile, maxSpeed = 50, minSpeed = 10 }) {
           depthTest={false}
           resolution={[width, height]}
           useMap
-          map={texture}
+          map={bandTexture}
           repeat={[-4, 1]}
           lineWidth={1}
         />
